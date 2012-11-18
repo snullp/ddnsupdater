@@ -36,6 +36,7 @@ if __name__ == '__main__':
     try:
         f = open('ipaddr','r+')
     except IOError:
+        print "ipaddr not found, creating"
         f = open('ipaddr','w+')
     if ip == f.readline():
         print "IP "+ip+" unchanged"
@@ -44,7 +45,8 @@ if __name__ == '__main__':
         data = updatedns(params)
         ret = json.loads(data)
         if ret.get("status",{}).get("code")=="1":
-            f.truncate(0)
+            f.seek(0)
+            f.truncate()
             f.write(ip)
             print "Success."
         else:
