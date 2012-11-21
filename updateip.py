@@ -4,9 +4,10 @@
 import httplib,urllib
 import socket
 import json
+import ConfigParser
 
 def updatedns(params):
-    headers = {"User-Agent": "Null's DDNS Updater/0.0.1 (snullp@gmail.com)","Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
+    headers = {"User-Agent": "Null's DDNS Updater/0.1.0 (snullp@gmail.com)","Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
     conn = httplib.HTTPSConnection("dnsapi.cn")
     conn.request("POST", "/Record.Ddns", urllib.urlencode(params), headers)
     response = conn.getresponse().read()
@@ -19,37 +20,33 @@ def getip():
     sock.close()
     return ip
 
-def dictconv(unidict):
-    utf8dict=dict()
-    for k in unidict:
-        if isinstance(unidict[k],basestring):
-            utf8dict[k.encode('utf-8')]=unidict[k].encode('utf-8')
-        else:
-            utf8dict[k.encode('utf-8')]=unidict[k]
-    return utf8dict
-
 if __name__ == '__main__':
-    f=open('userinfo','r')
-    params=dictconv(json.load(f))
-    f.close()
+    conf = ConfigParser.RawConfigParser()
+    conf.read("domaininfo.ini")
+
     ip = getip()
-    try:
-        f = open('ipaddr','r+')
-    except IOError:
-        print "ipaddr not found, creating"
-        f = open('ipaddr','w+')
-    if ip == f.readline():
-        print "IP "+ip+" unchanged"
-    else:
-        print "IP changed to "+ip+", updating..."
-        data = updatedns(params)
-        ret = json.loads(data)
-        if ret.get("status",{}).get("code")=="1":
-            f.seek(0)
-            f.truncate()
-            f.write(ip)
-            print "Success."
-        else:
-            print "Error:"
-            print data
+
+    for site in conf.sections():
+        params = {}
+        print "Processing "+site+"..."
+        try:
+            for param in conf.options(site):
+                if param == "lastip":
+                    if ip == conf.get(site,param):
+                        raise Warning
+                else: params[param] = conf.get(site,param)
+            print "IP changed to "+ip
+            data = updatedns(params)
+            ret = json.loads(data)
+            if ret.get("status",{}).get("code")=="1":
+                conf.set(site,"lastip",ip)
+                print "Success."
+            else:
+                print "Error:"
+                print data
+        except Warning:
+            print "IP "+ip+" unchanged"
+
+    f=open("domaininfo.ini","w")
+    conf.write(f)
     f.close()
