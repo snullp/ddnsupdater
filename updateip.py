@@ -14,16 +14,29 @@ def updatedns(params):
     conn.close()
     return response
 
+def getip_cn():
+    ip = '0.0.0.0'
+    try:
+        sock = socket.create_connection(('ns1.dnspod.net', 6666))
+        ip = sock.recv(16)
+        sock.close()
+    except socket.error:
+        pass
+    return ip
+
 def getip():
-    sock = socket.create_connection(('ns1.dnspod.net', 6666))
-    ip = sock.recv(16)
-    sock.close()
+    ip = urllib.urlopen('http://ip.appspot.com').read().strip()
+    try:
+        socket.inet_aton(ip)
+    except socket.error:
+        ip = '0.0.0.0'
     return ip
 
 if __name__ == '__main__':
     conf = ConfigParser.RawConfigParser()
     conf.read("domaininfo.ini")
 
+#change to getip_cn if you are in China mainland
     ip = getip()
 
     for site in conf.sections():
