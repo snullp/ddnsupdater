@@ -1,9 +1,10 @@
-#DDNS Updater#
+#Dnspod.cn DDNS Updater#
 
-Work with dnspod.cn APIs. 
+Work with dnspod.cn DDNS APIs. 
 
-**Now domain info is in INI format (domaininfo.ini).** See domaininfo.ini.sample for detail.
+##Usage##
+Put your domain info into domaininfo.ini. See domaininfo.ini.sample for an example.
 
-* Use id\_finder to query your record\_id and domain\_id.
-* If you are in China mainland, use getip\_cn() instead of getip() if necessary
+* Use id\_finder.py to query your record\_id and domain\_id.
+* If you are in China mainland, try to use getip\_cn() instead of getip() if error occurs.
 
