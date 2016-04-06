@@ -6,6 +6,7 @@ import socket
 import json
 import ConfigParser
 import sys
+import subprocess
 
 def updatedns(params):
     headers = {"User-Agent": "Null's DDNS Updater/0.1.0 (snullp@gmail.com)","Content-type": "application/x-www-form-urlencoded", "Accept": "text/json"}
@@ -26,12 +27,8 @@ def getip_cn():
     return ip
 
 def getip():
-    ip = urllib.urlopen('http://ip.appspot.com').read().strip()
-    try:
-        socket.inet_aton(ip)
-    except socket.error:
-        ip = None
-    return ip
+    ip = subprocess.check_output('dig +short myip.opendns.com @resolver1.opendns.com', shell = True)
+    return ip.strip()
 
 if __name__ == '__main__':
     conf = ConfigParser.RawConfigParser()
