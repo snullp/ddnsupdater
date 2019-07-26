@@ -1,9 +1,8 @@
 [Your first domain]
 record_line = 默认
 format = json
-login_email = Your login email
 sub_domain = Your sub domain
-login_password = Your login password
+login_token = token_id,token_token
 record_id = Your record id, use id_finder if don't know
 domain_id = Your domain id, use id_finder if don't know
 
